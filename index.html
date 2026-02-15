@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Głodny Królik: Marchewkowy Pęd</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #ADD8E6; /* Jasnoniebieskie tło */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .hud {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 0px white;
+        }
+        .stats-left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .start-screen, .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 10;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+        }
+        .btn {
+            background: #ff8c00;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.1s, background 0.2s;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #cc7000;
+        }
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #cc7000;
+        }
+        .hidden {
+            display: none !important;
+        }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .pop-anim {
+            animation: pop 0.2s ease-out;
+        }
+        .negative-feedback {
+            color: #ff4444;
+            animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .speed-label {
+            font-size: 16px;
+            opacity: 0.8;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-layer">
+        <div class="hud">
+            <div class="stats-left">
+                <div id="scoreContainer">
+                    Wynik: <span id="scoreDisplay">0</span>
+                    <span id="multiplierDisplay" style="color: #ff00ea; display: none; margin-left: 10px;">x2 (<span id="multiplierTimer">0</span>s)</span>
+                </div>
+                <div class="speed-label">
+                    Prędkość: <span id="speedDisplay">0.0</span>x
+                </div>
+            </div>
+            <div id="shieldDisplay" style="display: none; color: #2ecc71;">
+                🛡️ TARCZA AKTYWNA
+            </div>
+        </div>
+    </div>
+
+    <div id="startScreen" class="start-screen">
+        <h1 class="text-4xl mb-4 font-bold text-yellow-300 drop-shadow-md">🐇 Głodny Królik</h1>
+        <div class="bg-white/20 p-6 rounded-xl text-center backdrop-blur-sm border border-white/30 max-w-md">
+            <p class="mb-2">🥕 Zbieraj <b>Marchewki</b> (+1 pkt)</p>
+            <p class="mb-2 text-red-300 italic">⚠️ Każda stracona marchewka to -1 pkt!</p>
+            <p class="mb-2">🪨 Unikaj <b>Kamieni</b></p>
+            <p class="mb-2">🍎 <b>Jabłko</b> (co 15 pkt) = Tarcza 🛡️</p>
+            <p class="mb-4">🍌 <b>Banan</b> (co 10-20 pkt) = 2x Punkty (5s) ⚡</p>
+            <p class="text-sm font-bold text-orange-200">Uwaga: Jeśli wynik spadnie poniżej 0, przegrywasz!</p>
+        </div>
+        <button class="btn" onclick="startGame()">START</button>
+    </div>
+
+    <div id="gameOverScreen" class="game-over-screen hidden">
+        <h1 id="gameOverTitle" class="text-5xl mb-2 text-red-500 font-bold">KONIEC GRY</h1>
+        <p id="gameOverReason" class="text-xl mb-6 opacity-80"></p>
+        
+        <div class="bg-white/10 p-6 rounded-2xl border border-white/20 text-center min-w-[250px]">
+            <p class="text-lg opacity-80">Twój wynik</p>
+            <p class="text-4xl text-yellow-300 font-bold mb-4" id="finalScore">0</p>
+            
+            <div class="grid grid-cols-2 gap-4 text-sm border-t border-white/10 pt-4">
+                <div>
+                    <p class="opacity-60 uppercase text-[10px]">Czas gry</p>
+                    <p class="font-bold text-lg" id="finalTime">0s</p>
+                </div>
+                <div>
+                    <p class="opacity-60 uppercase text-[10px]">Najlepszy wynik</p>
+                    <p class="font-bold text-lg text-green-400" id="highScoreDisplay">0</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="startGame()">NAKARM KRÓLIKA</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const scoreEl = document.getElementById('scoreDisplay');
+    const scoreContainer = document.getElementById('scoreContainer');
+    const speedEl = document.getElementById('speedDisplay');
+    const finalScoreEl = document.getElementById('finalScore');
+    const finalTimeEl = document.getElementById('finalTime');
+    const highScoreEl = document.getElementById('highScoreDisplay');
+    const startScreen = document.getElementById('startScreen');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const gameOverReasonEl = document.getElementById('gameOverReason');
+    const shieldDisplay = document.getElementById('shieldDisplay');
+    const multiplierDisplay = document.getElementById('multiplierDisplay');
+    const multiplierTimerEl = document.getElementById('multiplierTimer');
+
+    let gameRunning = false;
+    let score = 0;
+    let frames = 0;
+    let timeDifficulty = 0; 
+    let currentBaseSpeed = 0;
+    let startTime = 0;
+    
+    const rabbit = {
+        x: 0,
+        y: 0,
+        width: 60,
+        height: 60,
+        hasShield: false
+    };
+
+    let entities = [];
+    let spawnRate = 60;
+    let multiplierActive = false;
+    let pointMultiplier = 1;
+    let multiplierInterval = null;
+
+    let nextAppleThreshold = 15;
+    let nextBananaThreshold = 0;
+
+    function handlePointer(e) {
+        if (!gameRunning) return;
+        
+        let clientX, clientY;
+        if (e.touches) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+
+        rabbit.x = clientX - rabbit.width / 2;
+        rabbit.y = clientY - rabbit.height / 2;
+
+        if (rabbit.x < 0) rabbit.x = 0;
+        if (rabbit.x > canvas.width - rabbit.width) rabbit.x = canvas.width - rabbit.width;
+        if (rabbit.y < 0) rabbit.y = 0;
+        if (rabbit.y > canvas.height - rabbit.height) rabbit.y = canvas.height - rabbit.height;
+    }
+
+    window.addEventListener('mousemove', handlePointer);
+    window.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        handlePointer(e);
+    }, { passive: false });
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        if (!gameRunning) {
+            rabbit.x = canvas.width / 2 - rabbit.width / 2;
+            rabbit.y = canvas.height / 2 - rabbit.height / 2;
+        }
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function init() {
+        rabbit.hasShield = false;
+        entities = [];
+        score = 0;
+        frames = 0;
+        timeDifficulty = 0;
+        currentBaseSpeed = 1; 
+        spawnRate = 60;
+        pointMultiplier = 1;
+        multiplierActive = false;
+        startTime = Date.now();
+        
+        nextAppleThreshold = 15;
+        nextBananaThreshold = getRandomInt(10, 20);
+
+        updateUI(false, true); // Inicjalizacja UI bez animacji podskakiwania
+        if (multiplierInterval) clearInterval(multiplierInterval);
+        multiplierDisplay.style.display = 'none';
+        shieldDisplay.style.display = 'none';
+        
+        gameRunning = true;
+        requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+        startScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        init();
+    }
+
+    function gameOver(reason) {
+        gameRunning = false;
+        const totalTimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+        
+        // Zarządzanie najlepszym wynikiem
+        let savedHighScore = localStorage.getItem('rabbitHighScore') || 0;
+        if (score > savedHighScore) {
+            localStorage.setItem('rabbitHighScore', score);
+            savedHighScore = score;
+        }
+
+        finalScoreEl.innerText = score;
+        finalTimeEl.innerText = totalTimeSeconds + "s";
+        highScoreEl.innerText = savedHighScore;
+        gameOverReasonEl.innerText = reason;
+        
+        gameOverScreen.classList.remove('hidden');
+        if (multiplierInterval) clearInterval(multiplierInterval);
+    }
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function spawnEntity(type) {
+        const size = 50;
+        const x = Math.random() * (canvas.width - size);
+        
+        let speed = currentBaseSpeed + Math.random() * 2 + (score / 40) + timeDifficulty;
+        if (type === 'stone') speed += 1.5;
+
+        entities.push({
+            type: type,
+            x: x,
+            y: -size,
+            width: size,
+            height: size,
+            speed: speed
+        });
+    }
+
+    function activateMultiplier() {
+        pointMultiplier = 2;
+        multiplierActive = true;
+        let duration = 5;
+        multiplierDisplay.style.display = 'inline-block';
+        multiplierTimerEl.innerText = duration;
+
+        if (multiplierInterval) clearInterval(multiplierInterval);
+
+        multiplierInterval = setInterval(() => {
+            duration--;
+            multiplierTimerEl.innerText = duration;
+            if (duration <= 0) {
+                clearInterval(multiplierInterval);
+                pointMultiplier = 1;
+                multiplierActive = false;
+                multiplierDisplay.style.display = 'none';
+            }
+        }, 1000);
+    }
+
+    // Dodano parametr silent, aby aktualizować UI bez animacji podskakiwania
+    function updateUI(isPenalty = false, silent = false) {
+        scoreEl.innerText = score;
+        
+        let avgSpeed = currentBaseSpeed + (score / 40) + timeDifficulty;
+        speedEl.innerText = avgSpeed.toFixed(1);
+
+        if (!silent) {
+            scoreContainer.classList.remove('pop-anim', 'negative-feedback');
+            void scoreContainer.offsetWidth; // Trigger reflow
+            
+            if (isPenalty) {
+                scoreContainer.classList.add('negative-feedback');
+            } else {
+                scoreContainer.classList.add('pop-anim');
+            }
+        }
+
+        shieldDisplay.style.display = rabbit.hasShield ? 'block' : 'none';
+    }
+
+    function gameLoop() {
+        if (!gameRunning) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        frames++;
+        if (frames % 60 === 0) {
+            timeDifficulty += 0.05; 
+            // Usunięto updateUI() stąd, aby wynik nie podskakiwał co sekundę
+        }
+
+        // Rysowanie Królika
+        ctx.font = `${rabbit.height}px Arial`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('🐇', rabbit.x, rabbit.y);
+
+        // Rysowanie Tarczy
+        if (rabbit.hasShield) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 3;
+            ctx.arc(rabbit.x + rabbit.width/2, rabbit.y + rabbit.height/2, rabbit.width/1.1, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#2ecc71';
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+
+        // Generowanie obiektów
+        // Banan nie wpływa już na spawnRate (Math.floor(score/4) to jedyny modyfikator)
+        if (frames % Math.max(15, spawnRate - Math.floor(score/4)) === 0) {
+            let spawnedSpecial = false;
+
+            if (score >= nextAppleThreshold) {
+                spawnEntity('apple');
+                nextAppleThreshold += 15;
+                spawnedSpecial = true;
+            } else if (score >= nextBananaThreshold) {
+                spawnEntity('banana');
+                nextBananaThreshold = score + getRandomInt(10, 20);
+                spawnedSpecial = true;
+            }
+
+            if (!spawnedSpecial) {
+                let stoneChance = 0.3 + (score * 0.004);
+                if (stoneChance > 0.65) stoneChance = 0.65;
+
+                if (Math.random() < stoneChance) {
+                    spawnEntity('stone');
+                } else {
+                    spawnEntity('carrot');
+                }
+            }
+        }
+
+        // Przetwarzanie obiektów
+        for (let i = entities.length - 1; i >= 0; i--) {
+            let e = entities[i];
+            e.y += e.speed;
+
+            ctx.font = `${e.height}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            let icon = '';
+            if (e.type === 'carrot') icon = '🥕';
+            if (e.type === 'stone') icon = '🪨';
+            if (e.type === 'apple') icon = '🍎';
+            if (e.type === 'banana') icon = '🍌';
+            
+            ctx.fillText(icon, e.x + e.width/2, e.y + e.height/2);
+
+            // Kolizje
+            let hitboxPadding = 14;
+            if (
+                rabbit.x < e.x + e.width - hitboxPadding &&
+                rabbit.x + rabbit.width > e.x + hitboxPadding &&
+                rabbit.y < e.y + e.height - hitboxPadding &&
+                rabbit.y + rabbit.height > e.y + hitboxPadding
+            ) {
+                if (e.type === 'carrot') {
+                    // Punktacja x2 przy aktywnym bananie
+                    score += (1 * pointMultiplier);
+                    updateUI();
+                } else if (e.type === 'stone') {
+                    if (rabbit.hasShield) {
+                        rabbit.hasShield = false;
+                        updateUI(false, false); // Podskocz przy utracie tarczy
+                    } else {
+                        gameOver("Uderzyłeś w kamień!");
+                    }
+                } else if (e.type === 'apple') {
+                    rabbit.hasShield = true;
+                    updateUI(false, false);
+                } else if (e.type === 'banana') {
+                    activateMultiplier();
+                }
+
+                entities.splice(i, 1);
+                continue;
+            }
+
+            // Usuwanie poza ekranem
+            if (e.y > canvas.height) {
+                if (e.type === 'carrot') {
+                    score -= 1;
+                    updateUI(true); // Podskocz i zatrzęś przy karze
+                    if (score < 0) {
+                        gameOver("Królik jest zbyt głodny!");
+                    }
+                }
+                entities.splice(i, 1);
+            }
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+</script>
+</body>
+</html>
