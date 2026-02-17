@@ -28,44 +28,64 @@
             user-select: none;
         }
         #rabbit {
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             z-index: 10;
             border-radius: 50%;
-            transition: box-shadow 0.3s ease, transform 0.2s;
+            transition: box-shadow 0.3s ease;
         }
-        /* Blue glow for shield */
+        
+        .jumping {
+            animation: rabbit-jump 0.3s ease-out;
+        }
+
+        @keyframes rabbit-jump {
+            0% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.2) translateY(-30px); }
+            100% { transform: scale(1) translateY(0); }
+        }
+
         #rabbit.shielded {
-            box-shadow: 0 0 20px 10px rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 25px 12px rgba(59, 130, 246, 0.6);
             background: rgba(59, 130, 246, 0.2);
         }
-        /* Yellow glow for banana multiplier */
         #rabbit.multiplier-active {
-            filter: drop-shadow(0 0 15px #facc15);
+            filter: drop-shadow(0 0 18px #facc15);
         }
         .carrot {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
             animation: bounce 0.8s infinite alternate;
         }
         .stone {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
         }
         .apple {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             filter: drop-shadow(0 4px 8px rgba(239, 68, 68, 0.4));
             animation: pulse 0.5s infinite alternate;
         }
         .banana {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             filter: drop-shadow(0 4px 8px rgba(234, 179, 8, 0.4));
             animation: pulse 0.4s infinite alternate;
         }
         .pineapple {
-            font-size: 2.5rem;
-            filter: drop-shadow(0 4px 8px rgba(234, 179, 8, 0.6));
+            font-size: 2.8rem;
+            filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.4));
             animation: pulse 0.6s infinite alternate;
         }
+        .coconut {
+            font-size: 2.8rem;
+            filter: drop-shadow(0 4px 8px rgba(120, 53, 15, 0.4));
+            animation: pulse 0.7s infinite alternate;
+        }
+        .seagull {
+            font-size: 3rem;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            z-index: 20;
+        }
+
         @keyframes bounce {
             from { transform: translateY(0) rotate(0deg); }
             to { transform: translateY(-12px) rotate(10deg); }
@@ -92,7 +112,7 @@
             border: 2px solid #fb923c;
         }
         .status-badge {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             letter-spacing: 1px;
             font-weight: 600;
             margin-top: 4px;
@@ -108,7 +128,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -117,19 +137,19 @@
             z-index: 200;
             text-align: center;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
         .btn {
             background: #f97316;
             color: white;
-            padding: 18px 50px;
+            padding: 16px 45px;
             border-radius: 40px;
             font-size: 1.4rem;
             font-weight: bold;
             cursor: pointer;
             border: none;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-top: 25px;
+            margin-top: 20px;
             box-shadow: 0 4px 0 #9a3412;
         }
         .btn:hover {
@@ -142,7 +162,7 @@
             position: absolute;
             font-weight: 900;
             pointer-events: none;
-            font-size: 2rem;
+            font-size: 2.2rem;
             z-index: 50;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
@@ -151,6 +171,46 @@
             20% { opacity: 1; transform: translateY(-10px) scale(1.2); }
             100% { opacity: 0; transform: translateY(-60px) scale(1); }
         }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+            text-align: center;
+            width: 100%;
+        }
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .stat-label {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 2px;
+            color: white;
+        }
+        .stat-value {
+            font-weight: 900;
+            font-size: 1.3rem;
+        }
+        .color-apple { color: #f87171; }
+        .color-banana { color: #facc15; }
+        .color-pineapple { color: #4ade80; }
+        .color-coconut { color: #a8a29e; }
+        .color-speed { color: #fb923c; }
     </style>
 </head>
 <body>
@@ -166,18 +226,50 @@
 </div>
 
 <div id="overlay">
-    <h1 id="status-title" class="text-5xl font-black mb-6 text-orange-500">Głodny Królik</h1>
-    <p id="status-msg" class="text-2xl mb-4">Zbieraj marchewki i unikaj kamieni!</p>
-    <ul class="text-left bg-white/10 p-6 rounded-2xl mb-6 space-y-2">
-        <li>🥕 Zbieraj marchewki (+1 pkt)</li>
-        <li>🪨 Unikaj kamieni (Koniec gry)</li>
-        <li>🍎 Jabłko (co 15-20 pkt) = 🛡️ Tarcza ochronna</li>
-        <li>🍌 Banan (co 10-20 pkt) = 2x Marchewki przez 5 sekund!</li>
-        <li>🍍 Ananas (co 30-40 pkt) = 🎁 Mega bonus +10 pkt!</li>
-        <li>⚠️ Każda niezebrana marchewka to -1 pkt</li>
-        <li>❌ Gra kończy się, gdy punkty spadną poniżej 0</li>
-    </ul>
-    <button class="btn" onclick="startGame()">Zacznij zbierać!</button>
+    <h1 id="status-title" class="text-5xl font-black mb-6 text-orange-500 italic drop-shadow-md">Głodny Królik</h1>
+    
+    <div id="game-results" class="hidden w-full max-w-sm">
+        <p id="status-msg" class="text-xl mb-4 text-white font-bold"></p>
+        <div class="stats-grid mb-6">
+            <div class="stat-box">
+                <span class="stat-label">🍎 Jabłka</span>
+                <span id="stat-apples" class="stat-value color-apple">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">🍌 Banany</span>
+                <span id="stat-bananas" class="stat-value color-banana">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">🍍 Ananasy</span>
+                <span id="stat-pineapples" class="stat-value color-pineapple">0</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">🥥 Kokosy</span>
+                <span id="stat-coconuts" class="stat-value color-coconut">0</span>
+            </div>
+            <div class="stat-box col-span-2">
+                <span class="stat-label">⚡ Prędkość Końcowa</span>
+                <span id="stat-speed" class="stat-value color-speed">1.0x</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="instructions" class="w-full max-w-sm">
+        <p class="text-xl mb-4 text-white font-medium">Zbieraj marchewki i unikaj kamieni!</p>
+        <ul class="text-left bg-white/10 p-5 rounded-2xl mb-6 space-y-2 text-base text-white border border-white/20">
+            <li>🥕 Marchewka = +1 pkt</li>
+            <li>🪨 Kamień = Koniec gry</li>
+            <li>🕊️ Mewa (od 100 pkt) = Atakuje z boku! ☠️</li>
+            <li>🍎 Jabłko = 🛡️ Tarcza ochronna</li>
+            <li>🍌 Banan = 2x Marchewki (5 sek)</li>
+            <li>🍍 Ananas = 🌟 +10 punktów!</li>
+            <li>🥥 Kokos = ❄️ Spowolnienie gry!</li>
+            <li class="font-bold text-orange-300">⚠️ Niezebrana marchewka = -1 pkt</li>
+            <li class="font-bold text-red-400">❌ Gra kończy się przy punktach poniżej 0!</li>
+        </ul>
+    </div>
+    
+    <button class="btn" onclick="startGame()">Nakarm królika</button>
 </div>
 
 <script>
@@ -191,9 +283,16 @@
     const overlay = document.getElementById('overlay');
     const statusTitle = document.getElementById('status-title');
     const statusMsg = document.getElementById('status-msg');
+    const instructions = document.getElementById('instructions');
+    const gameResults = document.getElementById('game-results');
+
+    let collectedApples = 0;
+    let collectedBananas = 0;
+    let collectedPineapples = 0;
+    let collectedCoconuts = 0;
 
     let score = 0;
-    let baseSpeed = 3;
+    let baseSpeed = 3.2;
     let speedMultiplier = 1;
     let isGameRunning = false;
     let hasShield = false;
@@ -204,14 +303,23 @@
     let gameLoop;
     let spawnTimer;
     
-    // Progi pojawiania się bonusów
-    let nextAppleScore = 15;      // Pierwsze jabłko ok 15 pkt
-    let nextPineappleScore = 30;  // Pierwszy ananas ok 30 pkt
-    let nextBananaScore = 10;     // Pierwszy banan ok 10 pkt
+    // Konfiguracja progów pojawiania się i flagi limitu (1 na przedział)
+    let lastAppleRound = -1;
+    let nextBananaScore = 15;
+    let bananaSpawnedThisRound = false;
+    let nextPineappleScore = 30;
+    let pineappleSpawnedThisRound = false;
+    let coconutSpawnedThisRound = false;
 
     function updateRabbitPosition() {
         rabbit.style.left = `${rabbitPos.x - rabbit.offsetWidth / 2}px`;
         rabbit.style.top = `${rabbitPos.y - rabbit.offsetHeight / 2}px`;
+    }
+
+    function rabbitJump() {
+        rabbit.classList.remove('jumping');
+        void rabbit.offsetWidth; 
+        rabbit.classList.add('jumping');
     }
 
     function handleMove(e) {
@@ -236,25 +344,66 @@
         if (!isGameRunning) return;
 
         let type = 'carrot';
-        
-        // Power-up: Ananas co 30-40 punktów (Bonus +10)
-        if (score >= nextPineappleScore) {
-            type = 'pineapple';
-            nextPineappleScore = score + Math.floor(Math.random() * 11) + 30;
-        }
-        // Power-up: Jabłko co 15-20 punktów (Tarcza)
-        else if (score >= nextAppleScore) {
-            type = 'apple';
-            // Losuj kolejny próg pojawienia się (15-20 pkt od obecnego wyniku)
-            nextAppleScore = score + Math.floor(Math.random() * 6) + 15;
-        } 
-        // Power-up: Banan co ok. 10-20 punktów (Mnożnik)
-        else if (score >= nextBananaScore) {
-            type = 'banana';
-            nextBananaScore = score + Math.floor(Math.random() * 11) + 10;
+        let x = 0;
+        let y = -80;
+        let vx = 0;
+        let vy = 0;
+
+        // Szansa na mewę (po 100 pkt)
+        if (score >= 100 && Math.random() < 0.08) {
+            type = 'seagull';
+            const side = Math.random() > 0.5 ? 'left' : 'right';
+            y = Math.random() * (window.innerHeight * 0.6) + 50;
+            
+            if (side === 'left') {
+                x = -80;
+                vx = (3 + Math.random() * 3) * speedMultiplier;
+            } else {
+                x = window.innerWidth + 80;
+                vx = -(3 + Math.random() * 3) * speedMultiplier;
+            }
         } 
         else {
-            type = Math.random() > 0.4 ? 'carrot' : 'stone';
+            const currentAppleRound = Math.floor(score / 15);
+            
+            // Jabłko: max 1 na każde 15 pkt
+            if (score > 0 && score % 15 === 0 && lastAppleRound !== currentAppleRound) {
+                type = 'apple';
+                lastAppleRound = currentAppleRound;
+            } 
+            // Kokos: max 1 w przedziale 100 - 150
+            else if (score >= 100 && score <= 150 && !coconutSpawnedThisRound) {
+                type = 'coconut';
+                coconutSpawnedThisRound = true;
+            }
+            // Ananas: max 1 w swoim losowym oknie
+            else if (score >= nextPineappleScore && !pineappleSpawnedThisRound) {
+                type = 'pineapple';
+                pineappleSpawnedThisRound = true;
+                // Planujemy kolejny po zebraniu/zniknięciu aktualnego progu (reset flagi w logice punktowej)
+            }
+            // Banan: max 1 w swoim losowym oknie
+            else if (score >= nextBananaScore && !bananaSpawnedThisRound) {
+                type = 'banana';
+                bananaSpawnedThisRound = true;
+            } 
+            else {
+                type = Math.random() > 0.4 ? 'carrot' : 'stone';
+            }
+
+            // Obsługa resetowania flag dla kolejnych losowych przedziałów
+            if (score > nextPineappleScore + 20) {
+                nextPineappleScore = score + Math.floor(Math.random() * 11) + 30;
+                pineappleSpawnedThisRound = false;
+            }
+            if (score > nextBananaScore + 15) {
+                nextBananaScore = score + Math.floor(Math.random() * 11) + 15;
+                bananaSpawnedThisRound = false;
+            }
+            
+            x = Math.random() * (window.innerWidth - 60);
+            y = -80;
+            vy = (baseSpeed + Math.random() * 2) * speedMultiplier;
         }
 
         const element = document.createElement('div');
@@ -265,16 +414,19 @@
         else if (type === 'apple') element.innerHTML = '🍎';
         else if (type === 'banana') element.innerHTML = '🍌';
         else if (type === 'pineapple') element.innerHTML = '🍍';
-        
-        const x = Math.random() * (window.innerWidth - 60);
-        const y = -80;
+        else if (type === 'coconut') element.innerHTML = '🥥';
+        else if (type === 'seagull') {
+            element.innerHTML = '🕊️';
+            if (vx > 0) element.style.transform = 'scaleX(-1)';
+        }
         
         const entityObj = {
             el: element,
             type: type,
             x: x,
             y: y,
-            velocity: (baseSpeed + Math.random() * 2) * speedMultiplier
+            vx: vx,
+            vy: vy
         };
 
         container.appendChild(element);
@@ -282,12 +434,15 @@
     }
 
     function updateGame() {
-        speedMultiplier += 0.0003;
+        speedMultiplier += 0.00035;
         speedElement.innerText = speedMultiplier.toFixed(2);
 
         for (let i = entities.length - 1; i >= 0; i--) {
             const ent = entities[i];
-            ent.y += ent.velocity;
+            
+            ent.x += ent.vx;
+            ent.y += ent.vy;
+            
             ent.el.style.top = `${ent.y}px`;
             ent.el.style.left = `${ent.x}px`;
 
@@ -298,29 +453,25 @@
             const dy = (entRect.top + entRect.height/2) - (rabbitRect.top + rabbitRect.height/2);
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < 50) {
-                if (ent.type === 'carrot') {
-                    collectCarrot(i);
-                } else if (ent.type === 'apple') {
-                    collectApple(i);
-                } else if (ent.type === 'banana') {
-                    collectBanana(i);
-                } else if (ent.type === 'pineapple') {
-                    collectPineapple(i);
-                } else if (ent.type === 'stone') {
-                    if (hasShield) {
-                        breakShield(i);
-                    } else {
-                        gameOver("Uderzyłeś w kamień!");
-                    }
+            if (distance < 60) {
+                if (ent.type === 'carrot') collectCarrot(i);
+                else if (ent.type === 'apple') collectApple(i);
+                else if (ent.type === 'banana') collectBanana(i);
+                else if (ent.type === 'pineapple') collectPineapple(i);
+                else if (ent.type === 'coconut') collectCoconut(i);
+                else if (ent.type === 'stone') {
+                    if (hasShield) breakShield(i);
+                    else gameOver("Uderzyłeś w kamień!");
+                }
+                else if (ent.type === 'seagull') {
+                    if (hasShield) breakShield(i);
+                    else gameOver("Zaatakowała Cię mewa!");
                 }
                 continue;
             }
 
-            if (ent.y > window.innerHeight) {
-                if (ent.type === 'carrot') {
-                    missedCarrot(ent.x);
-                }
+            if (ent.y > window.innerHeight + 100 || ent.x < -150 || ent.x > window.innerWidth + 150) {
+                if (ent.type === 'carrot') missedCarrot(ent.x);
                 ent.el.remove();
                 entities.splice(i, 1);
             }
@@ -331,63 +482,63 @@
         const points = isDoubleMultiplier ? 2 : 1;
         score += points;
         updateScoreDisplay();
-        
+        rabbitJump(); 
         showPopupText(entities[index].x, entities[index].y, isDoubleMultiplier ? "+2" : "+1", "text-orange-600");
-        
         entities[index].el.remove();
         entities.splice(index, 1);
-        
-        rabbit.style.transform = 'scale(1.4) rotate(15deg)';
-        setTimeout(() => rabbit.style.transform = 'scale(1) rotate(0deg)', 150);
     }
 
     function collectApple(index) {
+        collectedApples++;
         hasShield = true;
         rabbit.classList.add('shielded');
         shieldStatus.style.display = 'block';
+        rabbitJump(); 
         showPopupText(entities[index].x, entities[index].y, "🛡️ TARCZA!", "text-blue-500");
         entities[index].el.remove();
         entities.splice(index, 1);
     }
 
-    function collectPineapple(index) {
-        score += 10;
-        updateScoreDisplay();
-        
-        showPopupText(entities[index].x, entities[index].y, "🍍 +10 PKT!", "text-yellow-600");
-        
-        entities[index].el.remove();
-        entities.splice(index, 1);
-        
-        container.style.backgroundColor = '#fef08a';
-        setTimeout(() => container.style.backgroundColor = '', 200);
-    }
-
     function collectBanana(index) {
+        collectedBananas++;
         if (multiplierTimer) clearTimeout(multiplierTimer);
-        
         isDoubleMultiplier = true;
         rabbit.classList.add('multiplier-active');
         multiplierStatus.style.display = 'block';
-        
+        rabbitJump(); 
         let timeLeft = 5;
         multTimerElement.innerText = timeLeft;
-        
         if (window.bananaInterval) clearInterval(window.bananaInterval);
-
         window.bananaInterval = setInterval(() => {
             timeLeft--;
             multTimerElement.innerText = timeLeft;
             if (timeLeft <= 0) clearInterval(window.bananaInterval);
         }, 1000);
-
         multiplierTimer = setTimeout(() => {
             isDoubleMultiplier = false;
             rabbit.classList.remove('multiplier-active');
             multiplierStatus.style.display = 'none';
         }, 5000);
-
         showPopupText(entities[index].x, entities[index].y, "🍌 2x PKT!", "text-yellow-500");
+        entities[index].el.remove();
+        entities.splice(index, 1);
+    }
+
+    function collectPineapple(index) {
+        collectedPineapples++;
+        score += 10;
+        updateScoreDisplay();
+        rabbitJump(); 
+        showPopupText(entities[index].x, entities[index].y, "+10 PKT!", "text-green-600");
+        entities[index].el.remove();
+        entities.splice(index, 1);
+    }
+
+    function collectCoconut(index) {
+        collectedCoconuts++;
+        speedMultiplier = Math.max(1.0, speedMultiplier - 1.0);
+        rabbitJump();
+        showPopupText(entities[index].x, entities[index].y, "❄️ SPOWOLNIENIE!", "text-amber-800");
         entities[index].el.remove();
         entities.splice(index, 1);
     }
@@ -414,12 +565,10 @@
     function missedCarrot(x) {
         score--;
         updateScoreDisplay();
-
         if (score < 0) {
             gameOver("Królik jest zbyt głodny!");
             return;
         }
-
         const indicator = document.createElement('div');
         indicator.className = 'popup-text text-red-500';
         indicator.innerText = '-1';
@@ -439,72 +588,64 @@
         hasShield = false;
         isDoubleMultiplier = false;
         
-        // Reset progów
-        nextAppleScore = Math.floor(Math.random() * 6) + 15;
-        nextPineappleScore = Math.floor(Math.random() * 11) + 30;
-        nextBananaScore = Math.floor(Math.random() * 11) + 10;
+        // Reset flag przedziałów
+        lastAppleRound = -1;
+        nextBananaScore = 15;
+        bananaSpawnedThisRound = false;
+        nextPineappleScore = 30;
+        pineappleSpawnedThisRound = false;
+        coconutSpawnedThisRound = false;
         
+        collectedApples = 0;
+        collectedBananas = 0;
+        collectedPineapples = 0;
+        collectedCoconuts = 0;
+
         if (multiplierTimer) clearTimeout(multiplierTimer);
         if (window.bananaInterval) clearInterval(window.bananaInterval);
         
-        rabbit.classList.remove('shielded', 'multiplier-active');
+        rabbit.classList.remove('shielded', 'multiplier-active', 'jumping');
         shieldStatus.style.display = 'none';
         multiplierStatus.style.display = 'none';
-        
         updateScoreDisplay();
+        
         entities.forEach(ent => ent.el.remove());
         entities = [];
+        
         isGameRunning = true;
         overlay.style.display = 'none';
+        instructions.style.display = 'none';
+        gameResults.classList.add('hidden');
         
         updateRabbitPosition();
-
         gameLoop = setInterval(updateGame, 1000 / 60);
-        spawnTimer = setInterval(spawnEntity, 700);
+        spawnTimer = setInterval(spawnEntity, 750);
     }
 
     function gameOver(reason) {
         isGameRunning = false;
         clearInterval(gameLoop);
         clearInterval(spawnTimer);
-        if (multiplierTimer) clearTimeout(multiplierTimer);
-        if (window.bananaInterval) clearInterval(window.bananaInterval);
         
         statusTitle.innerText = "Koniec gry!";
-        statusTitle.className = "text-5xl font-black mb-6 text-red-500";
-        statusMsg.innerText = `${reason}\nZebrałeś: ${Math.max(0, score)} 🥕\nPrędkość końcowa: ${speedMultiplier.toFixed(2)}x`;
+        statusTitle.className = "text-5xl font-black mb-6 text-orange-500 italic drop-shadow-lg";
+        statusMsg.innerText = `${reason}\nZebrałeś: ${Math.max(0, score)} 🥕`;
+        
+        document.getElementById('stat-apples').innerText = collectedApples;
+        document.getElementById('stat-bananas').innerText = collectedBananas;
+        document.getElementById('stat-pineapples').innerText = collectedPineapples;
+        document.getElementById('stat-coconuts').innerText = collectedCoconuts;
+        document.getElementById('stat-speed').innerText = speedMultiplier.toFixed(2) + "x";
+        
         overlay.style.display = 'flex';
+        instructions.style.display = 'none';
+        gameResults.classList.remove('hidden');
         
         container.style.animation = 'shake 0.5s';
         setTimeout(() => container.style.animation = '', 500);
     }
 
-    window.addEventListener('resize', () => {
-        if (!isGameRunning) {
-            rabbitPos.x = window.innerWidth / 2;
-            rabbitPos.y = window.innerHeight / 2;
-            updateRabbitPosition();
-        }
-    });
-
     updateRabbitPosition();
 </script>
-
-<style>
-    @keyframes shake {
-        0% { transform: translate(1px, 1px) rotate(0deg); }
-        10% { transform: translate(-1px, -2px) rotate(-1deg); }
-        20% { transform: translate(-3px, 0px) rotate(1deg); }
-        30% { transform: translate(3px, 2px) rotate(0deg); }
-        40% { transform: translate(1px, -1px) rotate(1deg); }
-        50% { transform: translate(-1px, 2px) rotate(-1deg); }
-        60% { transform: translate(-3px, 1px) rotate(0deg); }
-        70% { transform: translate(3px, 1px) rotate(-1deg); }
-        80% { transform: translate(-1px, -1px) rotate(1deg); }
-        90% { transform: translate(1px, 2px) rotate(0deg); }
-        100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
-</style>
-
 </body>
 </html>
